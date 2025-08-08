@@ -10,6 +10,8 @@ function ProductList({ onHomeClick }) {
     const [addedtoCart, setAddedToCart] = useState([]); // State to manage added items in the cart
     const dispatch = useDispatch();
     const handleAddToCart = (plant) => {
+        console.log('Hozzáadva a kosárhoz:', plant.name);
+        dispatch(addItem(plant));
         setAddedToCart((prevCart) => {
         // Ha még nincs benne a növény, adjuk hozzá
         if (!prevCart.find(item => item.name === plant.name)) {
