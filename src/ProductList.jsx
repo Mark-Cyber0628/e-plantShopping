@@ -4,6 +4,16 @@ import CartItem from './CartItem';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
+    const [addedtoCart, setAddedToCart] = useState([]); // State to manage added items in the cart
+    const handleAddToCart = (plant) => {
+        setAddedToCart((prevCart) => {
+        // Ha még nincs benne a növény, adjuk hozzá
+        if (!prevCart.find(item => item.name === plant.name)) {
+            return [...prevCart, plant];
+        }
+        return prevCart; // Ha már benne van, nem csinálunk semmit
+    });
+};
 
     const plantsArray = [
         {
@@ -301,7 +311,7 @@ function ProductList({ onHomeClick }) {
       ))}
     </div>
   </div>
-))}          
+))}         
 
                 </div>
             ) : (
