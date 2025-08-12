@@ -22,6 +22,9 @@ export const CartSlice = createSlice({
       const nameToRemove = action.payload; // Feltételezzük, hogy a payload maga a növény neve
       state.items = state.items.filter(item => item.name !== nameToRemove);
     },
+    calculateTotalQuantity: (state) => {
+      return state.items.reduce((total, item) => total + item.quantity, 0);
+    },
 
     // Mennyiség frissítése az adott elemhez
     updateQuantity: (state, action) => {
