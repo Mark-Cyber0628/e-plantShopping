@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import './ProductList.css'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from './CartSlice';
 import CartItem from './CartItem';
-import { useSelector } from 'react-redux';
 
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
-    const [addedToCart, setAddedToCart] = useState([]);
     const dispatch = useDispatch();
+
+    const cartItems = useSelector(state => state.cart?.items || []);
+    const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    // A kosárban van-e már az adott növény?
+    const isInCart = (plantName) => {
+        return cartItems.some(item => item.name === plantName);
+    };
 
     const handleAddToCart = (plant) => {
         console.log('Hozzáadva a kosárhoz:', plant.name);
         dispatch(addItem(plant));
-        setAddedToCart(prevCart => {
-            if (!prevCart.find(item => item.name === plant.name)) {
-                return [...prevCart, plant];
-            }
-            return prevCart;
-        });
     };
 
     const handleContinueShopping = () => {
@@ -243,45 +243,40 @@ function ProductList({ onHomeClick }) {
         onHomeClick();
     };
 
-    const cartItems = useSelector(state => state.cart?.items || []);
-const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
     return (
         <div>
             <div className="navbar" style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
-      <a href="#" onClick={handleHomeClick} title="Home" style={{ display: 'inline-block' }}>
-        <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
-          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-        </svg>
-      </a>
+                <a href="#" onClick={handleHomeClick} title="Home" style={{ display: 'inline-block' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                    </svg>
+                </a>
 
-      <a href="#" onClick={handleCartClick} title="Cart" style={{ display: 'inline-block', position: 'relative' }}>
-        <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
-          <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM7.25 14H19l1.5-6H6.16l-.75-3H2v2h2l3.6 7.59-1.35 2.44C5.52 16.36 6.48 18 7.75 18h11v-2H7.25z"/>
-        </svg>
+                <a href="#" onClick={handleCartClick} title="Cart" style={{ display: 'inline-block', position: 'relative' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
+                        <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM7.25 14H19l1.5-6H6.16l-.75-3H2v2h2l3.6 7.59-1.35 2.44C5.52 16.36 6.48 18 7.75 18h11v-2H7.25z" />
+                    </svg>
 
-        {totalQuantity > 0 && (
-          <span style={{
-            position: 'absolute',
-            top: '-6px',
-            right: '-6px',
-            background: 'red',
-            color: 'white',
-            borderRadius: '50%',
-            padding: '2px 6px',
-            fontSize: '12px',
-            fontWeight: 'bold',
-            lineHeight: 1,
-            minWidth: '20px',
-            textAlign: 'center',
-          }}>
-            {totalQuantity}
-          </span>
-        )}
-      </a>
-    </div>
-
-
+                    {totalQuantity > 0 && (
+                        <span style={{
+                            position: 'absolute',
+                            top: '-6px',
+                            right: '-6px',
+                            background: 'red',
+                            color: 'white',
+                            borderRadius: '50%',
+                            padding: '2px 6px',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            lineHeight: 1,
+                            minWidth: '20px',
+                            textAlign: 'center',
+                        }}>
+                            {totalQuantity}
+                        </span>
+                    )}
+                </a>
+            </div>
 
             {!showCart ? (
                 <div className="product-grid">
@@ -290,19 +285,19 @@ const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
                             <h1>{category.category}</h1>
                             <div className="product-list">
                                 {category.plants.map((plant, plantIndex) => {
-                                    const isAdded = addedToCart.find(item => item.name === plant.name);
+                                    const added = isInCart(plant.name);
                                     return (
                                         <div className="product-card" key={plantIndex}>
                                             <img className="product-image" src={plant.image} alt={plant.name} />
                                             <div className="product-title">{plant.name}</div>
                                             <div className="product-description">{plant.description}</div>
-                                            <div className="product-cost">${plant.cost}</div>
+                                            <div className="product-cost">{plant.cost}</div>
                                             <button
                                                 className="product-button"
                                                 onClick={() => handleAddToCart(plant)}
-                                                disabled={!!isAdded}
+                                                disabled={added}
                                             >
-                                                {isAdded ? "Added to Cart" : "Add to Cart"}
+                                                {added ? "Added to Cart" : "Add to Cart"}
                                             </button>
                                         </div>
                                     );
