@@ -3,6 +3,7 @@ import './ProductList.css'
 import { useDispatch } from 'react-redux';
 import { addItem } from './CartSlice';
 import CartItem from './CartItem';
+import { useSelector } from 'react-redux';
 
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
@@ -242,16 +243,44 @@ function ProductList({ onHomeClick }) {
         onHomeClick();
     };
 
+    const cartItems = useSelector(state => state.cart?.items || []);
+const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
     return (
         <div>
-            <div className="navbar">
-  <a href="#" onClick={handleHomeClick} title="Home" style={{ fontSize: '24px' }}>
-    🏠
-  </a>
-  <a href="#" onClick={handleCartClick} title="Cart" style={{ fontSize: '24px', marginLeft: '20px' }}>
-    🛒
-  </a>
-</div>
+            <div className="navbar" style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
+      <a href="#" onClick={handleHomeClick} title="Home" style={{ display: 'inline-block' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+      </a>
+
+      <a href="#" onClick={handleCartClick} title="Cart" style={{ display: 'inline-block', position: 'relative' }}>
+        <svg xmlns="http://www.w3.org/2000/svg" height="28" viewBox="0 0 24 24" width="28" fill="#000000">
+          <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM7.25 14H19l1.5-6H6.16l-.75-3H2v2h2l3.6 7.59-1.35 2.44C5.52 16.36 6.48 18 7.75 18h11v-2H7.25z"/>
+        </svg>
+
+        {totalQuantity > 0 && (
+          <span style={{
+            position: 'absolute',
+            top: '-6px',
+            right: '-6px',
+            background: 'red',
+            color: 'white',
+            borderRadius: '50%',
+            padding: '2px 6px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            lineHeight: 1,
+            minWidth: '20px',
+            textAlign: 'center',
+          }}>
+            {totalQuantity}
+          </span>
+        )}
+      </a>
+    </div>
+
 
 
             {!showCart ? (
