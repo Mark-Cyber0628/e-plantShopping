@@ -267,6 +267,7 @@ function ProductList({ onHomeClick }) {
     const handleContinueShopping = (e) => {
         e.preventDefault();
         setShowCart(false);
+        setShowPlants(true); // Show the plants list when continuing shopping
     };
     return (
         <div>
@@ -321,7 +322,7 @@ function ProductList({ onHomeClick }) {
 
                 </div>
             ) : (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                <CartItem onContinueShopping={handleContinueShopping} onCheckout={handleCheckout} />
             )}
         </div>
     );
